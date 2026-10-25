@@ -78,10 +78,19 @@ return {titulo:x.title,data_turno:x.date,inicio:x.start,termino:x.end,responsave
 }
 async function refreshData(){
 loadingData=true;
+const failures=[];
 try{
-const results=await Promise.all(Object.entries(tableMap).map(async ([type,table])=>{const {data,error}=await sb.from(table).select('*');if(error)throw new Error(table+': '+error.message);return [type,data.map(r=>fromRow(type,r))]}));
-db=Object.fromEntries(results);render();
-}catch(e){notify('Não foi possível carregar os dados online: '+e.message+'. Confira as permissões (RLS) das tabelas no Supabase.')}
+const results=await Promise.all(Object.entries(tableMap).map(async ([type,table])=>{
+try{
+const {data,error}=await sb.from(table).select('*');
+if(error)throw error;
+return {type,rows:data.map(r=>fromRow(type,r)),ok:true};
+}catch(error){failures.push(table+': '+(error.message||String(error)));return {type,ok:false};}
+}));
+for(const result of results){if(result.ok)db[result.type]=result.rows;}
+render();
+if(failures.length)notify('Alguns dados online não carregaram: '+failures.join(' | ')+'. Atualize a página e confira as permissões no Supabase.');
+}catch(e){notify('Erro ao atualizar os dados online: '+(e.message||String(e)))}
 finally{loadingData=false}
 }
 function card(type,x,admin=false){let title=x.title||x.name||'Registro';let meta=type==='reports'? `${fmt(x.date)} • ${x.time||'Horário não informado'}`:type==='operations'?`${fmt(x.date)} • ${x.time||''}`:type==='personnel'?`${x.rank||''} ${x.role?'• '+x.role:''}`:`${fmt(x.date)} • ${x.start||''}–${x.end||''}`;let desc=x.summary||x.objective||x.team||x.notes||x.leader||'';let status=x.status?`<span class="tag ${['Concluída','Ativo','Em andamento'].includes(x.status)?'gold':''}">${esc(x.status)}</span>`:'';return `<article class="item"><div class="meta">${esc(meta)}</div><h3>${esc(title)}</h3>${status}<p>${esc(desc)}</p>${x.author?`<div class="meta">Registrado por ${esc(x.author)}</div>`:''}${admin?`<div class="form-actions"><button class="btn small" onclick="editItem('${type}','${x.id}')">Editar</button><button class="btn small danger" onclick="deleteItem('${type}','${x.id}')">Excluir</button></div>`:''}</article>`}
