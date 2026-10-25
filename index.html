@@ -53,7 +53,7 @@ let db=structuredClone(blank),logged=false,formType='report',editing=null,loadin
 const tableMap={reports:'ocorrencias',operations:'operacoes',personnel:'efetivo',shifts:'turnos'};
 function esc(v=''){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmt(v){if(!v)return 'Não informado';if(/^\d{4}-\d{2}-\d{2}$/.test(v)){let [y,m,d]=v.split('-');return `${d}/${m}/${y}`}return v}
-function notify(msg){let n=document.getElementById('appNotice');if(!n){n=document.createElement('div');n.id='appNotice';n.className='notice';document.querySelector('#page-admin .section-head').after(n)}n.textContent=msg;n.classList.remove('hidden')}
+function notify(msg){let n=document.getElementById('appNotice');const page=[...document.querySelectorAll('main section')].find(section=>!section.classList.contains('hidden'))||document.getElementById('page-admin');if(!n){n=document.createElement('div');n.id='appNotice';n.className='notice'}const anchor=page.querySelector('.section-head');if(n.parentElement!==page){if(anchor)anchor.after(n);else page.prepend(n)}n.textContent=msg;n.classList.remove('hidden')}
 function go(page){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById('page-'+page).classList.remove('hidden');document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));window.scrollTo({top:0,behavior:'smooth'});if(page==='admin')syncAdmin()}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
 document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.goto)));
