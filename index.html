@@ -71,9 +71,9 @@ if(type==='personnel')return {id:r.id,name:r.nome||'',rank:r.patente||'',role:r.
 return {id:r.id,title:r.titulo||'',date:r.data_turno||'',start:r.inicio||'',end:r.termino||'',leader:r.responsavel||'',team:r.equipe||'',status:r.situacao||'Programado'};
 }
 function toRow(type,x){
-if(type==='reports')return {titulo:x.title,descricao:x.summary,local:'',data_ocorrencia:x.date,horario:x.time||null,equipe:x.team,viatura:x.vehicle||null,resultado:x.result||null,responsavel:x.author||null};
-if(type==='operations')return {titulo:x.title,descricao:x.objective,local:'',data_operacao:x.date,horario:x.time||null,equipe:x.team||null,responsavel:x.responsible||null,situacao:x.status||'Planejada'};
-if(type==='personnel')return {nome:x.name,patente:x.rank,unidade:x.role||null,funcao:x.role||null,situacao:x.status||'Ativo',observacoes:x.notes||null};
+if(type==='report')return {titulo:x.title,descricao:x.summary,local:'',data_ocorrencia:x.date,horario:x.time||null,equipe:x.team,viatura:x.vehicle||null,resultado:x.result||null,responsavel:x.author||null};
+if(type==='operation')return {titulo:x.title,descricao:x.objective,local:'',data_operacao:x.date,horario:x.time||null,equipe:x.team||null,responsavel:x.responsible||null,situacao:x.status||'Planejada'};
+if(type==='person')return {nome:x.name,patente:x.rank,unidade:x.role||null,funcao:x.role||null,situacao:x.status||'Ativo',observacoes:x.notes||null};
 return {titulo:x.title,data_turno:x.date,inicio:x.start,termino:x.end,responsavel:x.leader,equipe:x.team,situacao:x.status||'Programado'};
 }
 async function refreshData(){
