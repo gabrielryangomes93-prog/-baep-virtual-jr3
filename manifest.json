@@ -1,0 +1,10 @@
+{
+  "name": "15º BAEP Virtual JR3",
+  "short_name": "BAEP JR3",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#10130e",
+  "theme_color": "#171c12",
+  "description": "Portal de roleplay do 15º BAEP Virtual JR3",
+  "icons": []
+}
