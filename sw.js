@@ -1,4 +1,4 @@
-const CACHE='baep-jr3-v4';
+const CACHE='baep-jr3-v5';
 const FILES=['./','./index.html','./manifest.json'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);for(const file of FILES){try{await cache.add(file)}catch(error){}}await self.skipWaiting()})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key.startsWith('baep-jr3-')&&key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim()})()));
