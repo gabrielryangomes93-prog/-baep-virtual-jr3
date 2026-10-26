@@ -131,6 +131,9 @@ let lastSync=0;
 async function syncPublicData(){if(document.visibilityState==='visible'&&!loadingData&&Date.now()-lastSync>8000){lastSync=Date.now();await refreshData()}}
 setInterval(syncPublicData,10000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncPublicData()});
+// Atualização em tempo real via Supabase Realtime, além da sincronização periódica.
+const liveChannel=sb.channel('baep-public-live').on('postgres_changes',{event:'*',schema:'public',table:'ocorrencias'},()=>refreshData()).on('postgres_changes',{event:'*',schema:'public',table:'operacoes'},()=>refreshData()).on('postgres_changes',{event:'*',schema:'public',table:'efetivo'},()=>refreshData()).on('postgres_changes',{event:'*',schema:'public',table:'turnos'},()=>refreshData()).subscribe((status)=>{if(status==='SUBSCRIBED')console.info('[BAEP JR3] Atualização em tempo real conectada.');else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('[BAEP JR3] Realtime indisponível; sincronização periódica continua ativa.',status)});
+document.getElementById('appNotice')?.remove();
 sb.auth.getSession().then(async({data})=>{if(data.session){const {data:allowed}=await sb.rpc('is_baep_admin');if(allowed===true){logged=true;document.getElementById('adminGreeting').textContent='ADMINISTRADOR • '+data.session.user.email;syncAdmin()}}});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script></body></html>
