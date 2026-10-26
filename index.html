@@ -126,6 +126,11 @@ document.getElementById('clearDemo').textContent='Atualizar registros';
 document.getElementById('clearDemo').onclick=async()=>{if(!logged)return;await refreshData();notify('Lista sincronizada com o banco online.')};
 document.getElementById('username').type='email';document.getElementById('username').autocomplete='username';document.getElementById('username').placeholder='Seu e-mail cadastrado no Supabase';document.querySelector('label[for="username"]').textContent='E-mail do administrador';document.querySelector('#loginForm .meta').textContent='Entre com a conta cadastrada no Supabase.';document.querySelector('#loginForm button[type="submit"]').textContent='Entrar';document.querySelector('#loginForm').nextElementSibling.textContent='O acesso é validado pelo Supabase e pela permissão de administrador.';
 buildForm();render();refreshData();
+// Sincroniza automaticamente os dados online para que todos vejam as alterações sem republicar o site.
+let lastSync=0;
+async function syncPublicData(){if(document.visibilityState==='visible'&&!loadingData&&Date.now()-lastSync>8000){lastSync=Date.now();await refreshData()}}
+setInterval(syncPublicData,10000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncPublicData()});
 sb.auth.getSession().then(async({data})=>{if(data.session){const {data:allowed}=await sb.rpc('is_baep_admin');if(allowed===true){logged=true;document.getElementById('adminGreeting').textContent='ADMINISTRADOR • '+data.session.user.email;syncAdmin()}}});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script></body></html>
